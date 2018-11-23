@@ -18,7 +18,9 @@ class Display2D extends Component {
     const { plants } = model;
     if (plants) {
       if (!this.view) {
-        this.view = View2D(this.el, plants);
+        const width = 800;
+        const height = 300;
+        this.view = View2D(this.el, width, height, plants);
       } else {
         this.view.clearPlants();
         this.view.addPlants(plants);

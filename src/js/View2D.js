@@ -1,6 +1,6 @@
 import Matter from 'matter-js';
 
-export default function View2D(el, plants) {
+export default function View2D(el, width, height, plants) {
     var Engine = Matter.Engine,
         Render = Matter.Render,
         Runner = Matter.Runner,
@@ -22,8 +22,8 @@ export default function View2D(el, plants) {
       element: el,
       engine: engine,
       options: {
-        width: 800,
-        height: 600,
+        width: width,
+        height: height,
         background: '#8785a2',
         wireframes: false,
         showAngleIndicator: false
@@ -40,31 +40,33 @@ export default function View2D(el, plants) {
     function getPlantBodies(plants) {
         const plantBodies = [];
         plants.forEach((plant) => {
-            console.log(plant);
-            const { pos, type, count } = plant;
-            const { x, y } = pos;
-            const { r, color, sprite } = type;
-            console.log(color);
-            for (let i = 0; i < count; i += 1) {
-              const c = Composite.create({
-                  bodies: [Bodies.circle(x + i, y + i, r, {
-                    render: {
-                      fillStyle: color,
-                      // strokeStyle: '#ffffff',
-                      strokeStyle: color,
-                      lineWidth: 4,
-                      opacity: 0.6
-                      // sprite: {
-                      //     texture: sprite
-                      // }
-                    },
-                    friction: .09,
-                    restitution: .15,
-                    // isStatic: true
-                  })]
-              });
-              plantBodies.push(c);
-            }
+            const { pos, type } = plant;
+            const { r, color } = type;
+            const bodies = [];
+            pos.forEach(item => {
+              const { x, y } = item;
+              bodies.push(Bodies.circle(x, y, r, {
+                render: {
+                  fillStyle: color,
+                  // strokeStyle: '#ffffff',
+                  strokeStyle: color,
+                  lineWidth: 4,
+                  opacity: 0.6
+                  // sprite: {
+                  //     texture: sprite
+                  // }
+                },
+                friction: .9,
+                restitution: .15,
+                // isStatic: true
+              }));
+            });
+            const c = Composite.create({
+                bodies: bodies
+            });
+            plant.composite = c;
+            // Add to list to add to world
+            plantBodies.push(c);
         });
         return plantBodies;
     };
@@ -73,10 +75,10 @@ export default function View2D(el, plants) {
 
     World.add(world, [
         // walls
-        Bodies.rectangle(400, -51, 800, 100, { isStatic: true }),
-        Bodies.rectangle(400, 651, 800, 100, { isStatic: true }),
-        Bodies.rectangle(-51, 300, 100, 600, { isStatic: true }),
-        Bodies.rectangle(851, 300, 100, 600, { isStatic: true })
+        Bodies.rectangle(width/2, -51, width, 100, { isStatic: true }),
+        Bodies.rectangle(width/2, height + 51, width, 100, { isStatic: true }),
+        Bodies.rectangle(-51, height/2, 100, height, { isStatic: true }),
+        Bodies.rectangle(width + 51, height/2, 100, height, { isStatic: true })
     ]);
 
     // add mouse control
@@ -99,7 +101,7 @@ export default function View2D(el, plants) {
     // fit the render viewport to the scene
     Render.lookAt(render, {
         min: { x: 0, y: 0 },
-        max: { x: 800, y: 600 }
+        max: { x: width, y: height }
     });
 
     // context for MatterTools.Demo

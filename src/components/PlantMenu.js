@@ -6,7 +6,7 @@ class PlantMenu extends Component {
     const plantOptions = Object.keys(PlantsEnum).map(key => {
       const plant = PlantsEnum[key];
       const { label, color } = plant;
-      return <li><span className="swatch" style={{ background: color, marginRight: '10px' }}></span><span>{label}</span></li>;
+      return <li key={key}><span className="swatch" style={{ background: color, marginRight: '10px' }}></span><span>{label}</span></li>;
     });
 
     return (

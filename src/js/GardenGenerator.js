@@ -4,14 +4,18 @@ import PlantsEnum from './PlantsEnum';
 export default class GardenGenerator {
   constructor() {
     // x, y, w, h
-    this.bounds = { x: 0, y: 0, w: 800, h: 600 };
+    this.bounds = { x: 0, y: 0, w: 800, h: 300 };
+    this.colors = {};
     const initialPopulation = this.getInitialPopulation();
     this.population = new Population(initialPopulation, this.getRandomPlant, this.sortByFitness);
     this.best = this.population.getBest();
   }
 
-  generate = () => {
-    this.population.next();
+  generate = (colors) => {
+    this.colors = colors || {};
+    for (let i = 0; i < 1000; i++) {
+      this.population.next();
+    }
 
     const model = {
       plants: this.population.getBest()
@@ -22,20 +26,73 @@ export default class GardenGenerator {
 
   // Return the list of individuals in order of most fit
   sortByFitness = individuals => {
-    // Make a copy
-    individuals = individuals.slice();
-    console.log('before' + individuals.map(i => i.length));
-    // TODO: implement
-    individuals.sort((i0, i1) => {
-      if (i0.length < i1.length) {
-        return -1;
-      } else if (i0.length === i1.length) {
-        return 0;
-      } else {
-        return 1;
-      }
+    // Make a map to sort with
+    const indexedIndividuals = individuals.map((individual, index) => {
+      return {
+        id: index,
+        plants: individual,
+        fitness: 0
+      };
     });
-    console.log('after' + individuals.map(i => i.length));
+
+    const colorKeys = Object.keys(this.colors);
+    if (colorKeys.length > 0) {
+      const normalizedColors = Object.assign({}, this.colors);
+      this.normalize(normalizedColors);
+      // console.log('normalizedColors', normalizedColors);
+
+      // Calculate and add color fitness by comparing ratios
+      indexedIndividuals.forEach(item => {
+        const { plants } = item;
+        // Calculate total area of each color
+        const colorArea = {};
+        colorKeys.forEach(key => colorArea[key] = 0);
+
+        plants.forEach(plant => {
+          const { type, count } = plant;
+          const { colorType, r } = type;
+          colorArea[colorType] += (r**2) * count;
+        });
+        // console.log('colorArea', colorArea);
+
+        // Normalize color areas for comparison
+        this.normalize(colorArea);
+
+        // Calculate fitness by finding sum of differences
+        let colorFitness = 0;
+        colorKeys.forEach(key => {
+          colorFitness += Math.abs(colorArea[key] - normalizedColors[key]);
+        });
+
+        // console.log(colorFitness);
+        item.fitness = colorFitness;
+      });
+
+      // Sort by color fitness
+      indexedIndividuals.sort((i0, i1) => {
+        if (i0.fitness < i1.fitness) {
+          return -1;
+        } else if (i0.fitness === i1.fitness) {
+          return 0;
+        } else {
+          return 1;
+        }
+      });
+      // console.log('sorted', indexedIndividuals);
+      console.log('fittest: ' + indexedIndividuals[0].fitness);
+      individuals = indexedIndividuals.map(i => i.plants);
+    } else {
+      // sort by size
+      individuals.sort((i0, i1) => {
+        if (i0.length < i1.length) {
+          return -1;
+        } else if (i0.length === i1.length) {
+          return 0;
+        } else {
+          return 1;
+        }
+      });
+    }
 
     return individuals;
   }
@@ -75,24 +132,29 @@ export default class GardenGenerator {
     const type = this.getRandomPlantType();
     const { r } = type;
     const maxNumber = 50 / r;
-    const c = Math.floor(Math.random() * maxNumber) + 1;
-    console.log(r, c);
+    const count = Math.floor(Math.random() * maxNumber) + 1;
 
-    const plant = {
-      pos: { x: px, y: py },
-      type: type,
-      count: c
-    };
+    const pos = [];
+    for (let i = 0; i < count; i += 1) {
+      pos.push({ x: px + i, y: py + i });
+    }
+
+    const plant = { pos, type, count };
     return plant;
   }
-
-  // Check if the point is legal
-  // isLegal = pt => {
-  //   return true;
-  // }
 
   getRandomPlantType = () => {
     var keys = Object.keys(PlantsEnum)
     return PlantsEnum[keys[Math.floor(keys.length * Math.random())]];
-  };
+  }
+
+  // Normalize the map in place
+  normalize = map => {
+    const max = Math.max.apply(Math, Object.values(map));
+
+    Object.keys(map).forEach(key => {
+        const value = map[key];
+        map[key] = value / max;
+    });
+  }
 }

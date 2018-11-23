@@ -5,6 +5,7 @@ import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
 import PlantMenu from './components/PlantMenu';
 import Display2D from './components/Display2D';
+import Display3D from './components/Display3D';
 import Generator from './components/Generator';
 import PlantsEnum from './js/PlantsEnum';
 
@@ -15,21 +16,11 @@ class App extends Component {
     model: {
       plants: [
         {
-          pos: {
+          pos: [{
             x: 200,
             y: 200
-          },
+          }],
           type: PlantsEnum.SITKA_SPRUCE,
-          count: 1
-        },
-        {
-          pos: {
-            x: 100,
-            y: 100
-          },
-          type: {
-            r: 40
-          },
           count: 1
         }
       ]
@@ -57,6 +48,7 @@ class App extends Component {
               </Grid>
               <Grid item xs={6}>
                 <Display2D model={model} />
+                <Display3D model={model} />
               </Grid>
               <Grid item xs={3}>
                 <Generator updateModel={this.updateModel} />

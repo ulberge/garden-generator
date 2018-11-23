@@ -23,12 +23,13 @@ export default class Population {
 
     // Update this population to the next generation
     next = () => {
-      this.individuals = this.breed(this.individuals);
+      this.individuals = this.deepCopy(this.breed(this.individuals));
     }
 
     // Get the best individual from this population
     getBest = () => {
-      return this.sortByFitness(this.individuals)[0];
+      const sorted = this.sortByFitness(this.individuals);
+      return sorted[0];
     }
 
     /**
@@ -91,5 +92,16 @@ export default class Population {
       }
 
       return child;
+    }
+
+    deepCopy = generation => {
+      return generation.map(individual => {
+        return individual.map(plant => {
+          const newPlant = Object.assign({}, plant);
+          // Deep copy the positions to make sure they are all independent
+          newPlant.pos = plant.pos.map(item => Object.assign({}, item));
+          return newPlant;
+        });
+      });
     }
 }
