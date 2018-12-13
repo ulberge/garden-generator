@@ -3,33 +3,26 @@
 * algorithm
 */
 export default class Population {
-    constructor(initialPopulation, getRandomGene, sortByFitness, options = {}) {
-      // Initial array of individuals
+    constructor(initialPopulation, options = {}) {
       this.individuals = initialPopulation;
-      // Function that retrieves a random gene
-      this.getRandomGene = getRandomGene;
-      // Function that takes a list of individuals and returns them in order of most fit
-      this.sortByFitness = sortByFitness;
-
       this.options = {
-        pop_size: initialPopulation.length,
         num_breeding_parents: options.num_breeding_parents || 2,
         num_elite: options.num_elite || 2,
-        num_crossover: options.num_crossover || 4,
-        num_mutate: options.num_mutate || 4,
+        num_crossover: options.num_crossover || 3,
+        num_mutate: options.num_mutate || 3,
         mutation_rate: options.mutation_rate || 0.01
       };
     }
 
-    // Update this population to the next generation
+    // Create the next generation
     next = () => {
-      this.individuals = this.deepCopy(this.breed(this.individuals));
+      this.individuals = this.breed(this.individuals);
     }
 
-    // Get the best individual from this population
-    getBest = () => {
-      const sorted = this.sortByFitness(this.individuals);
-      return sorted[0];
+    sort = () => {
+      this.sortByFitness(this.individuals);
+      console.log(this.individuals.map(i => i.fitness));
+      console.log(this.individuals[0].fitnessData);
     }
 
     /**
@@ -38,13 +31,11 @@ export default class Population {
     * Implementing the algorithm described here:
     * https://www.mathworks.com/help/gads/how-the-genetic-algorithm-works.html
     */
-    breed = individuals => {
-      // Sort the population by fitness
-      const individuals_ordered_by_fitness = this.sortByFitness(individuals);
-      const breeding_parents = individuals_ordered_by_fitness.slice(0, this.options.num_breeding_parents);
+    breed = (individuals) => {
+      const breeding_parents = individuals.slice(0, this.options.num_breeding_parents);
 
       // Take the top parents as the 'elite'
-      const elite_pop = individuals_ordered_by_fitness.slice(0, this.options.num_elite);
+      const elite_pop = individuals.slice(0, this.options.num_elite);
 
       // Create children using crossover breeding of best parents
       const crossover_pop = [];
@@ -64,7 +55,7 @@ export default class Population {
       return new_individuals;
     }
 
-    // Return a child created by randomly mixing the genes of 2 parents
+    // Return a child created by randomly mixing the genotype of 2 parents
     // from a list of parents
     crossover = parents => {
       // Randomly select 2 parents to breed
@@ -72,36 +63,50 @@ export default class Population {
       const p1_index = Math.floor(Math.random() * parents.length);
       const p0 = parents[p0_index];
       const p1 = parents[p1_index];
-      const p0_genes = p0.slice(0, Math.floor(p0.length / 2));
-      const p1_genes = p1.slice(Math.floor(p1.length / 2));
+      const p0_genotype = p0.genotype.slice(0, Math.floor(p0.length / 2));
+      const p1_genotype = p1.genotype.slice(Math.floor(p1.length / 2));
 
-      const child = p0_genes.concat(p1_genes);
+      const child_genotype = p0_genotype.concat(p1_genotype);
+
+      const child = this.createNewIndividual(child_genotype);
       return child;
     }
 
-    // Return a child created by randomly change some of the genes of the parent
+    // Return a child created by randomly change some of the genotype of the parent
     mutate = parent => {
-      const child = parent.slice();
+      const child_genotype = parent.genotype.slice();
 
       // Every gene has a chance of random mutation based on probability
-      for (let i = 0; i < child.length; i += 1) {
+      for (let i = 0; i < child_genotype.length; i += 1) {
         if (Math.random() < this.options.mutation_rate) {
           const new_gene = this.getRandomGene();
-          child[i] = new_gene;
+          child_genotype[i] = new_gene;
         }
       }
 
+      const child = this.createNewIndividual(child_genotype);
       return child;
     }
 
-    deepCopy = generation => {
-      return generation.map(individual => {
-        return individual.map(plant => {
-          const newPlant = Object.assign({}, plant);
-          // Deep copy the positions to make sure they are all independent
-          newPlant.pos = plant.pos.map(item => Object.assign({}, item));
-          return newPlant;
-        });
-      });
-    }
+  // Return the list of individuals in order of most fit
+  sortByFitness = (individuals) => {
+    individuals.sort((i0, i1) => {
+      if (i0.fitness < i1.fitness) {
+        return 1;
+      } else if (i0.fitness === i1.fitness) {
+        return 0;
+      } else {
+        return -1;
+      }
+    });
+  }
+
+  // deepCopy = generation => {
+  //   return generation.map(individual => {
+  //     return individual.map(plant => {
+  //       const newPlant = Object.assign({}, plant);
+  //       return newPlant;
+  //     });
+  //   });
+  // }
 }

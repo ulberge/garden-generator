@@ -7,9 +7,9 @@ export default class View3D {
   constructor(container) {
     this.container = container;
 
-    this.worldWidth = 800;
+    this.worldWidth = 600;
     this.worldHeight = 300;
-    this.width = 1200;
+    this.width = 1100;
     this.height = 300;
 
     // Setup Three.js scene, camera, and renderer
@@ -18,7 +18,7 @@ export default class View3D {
     this.camera = new THREE.PerspectiveCamera(45, this.width / this.height, 1, 2000);
     this.camera.position.z = 650;
     this.camera.position.y = 100;
-    this.camera.position.x = 400;
+    this.camera.position.x = this.worldWidth / 2;
     this.scene.add(this.camera);
     this.renderer = new THREE.WebGLRenderer({
       alpha: true

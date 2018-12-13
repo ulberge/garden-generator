@@ -4,7 +4,7 @@ import PlantsEnum from './PlantsEnum';
 export default class GardenGenerator {
   constructor() {
     // x, y, w, h
-    this.bounds = { x: 0, y: 0, w: 800, h: 300 };
+    this.bounds = { x: 0, y: 0, w: 600, h: 300 };
     this.colors = {};
     const initialPopulation = this.getInitialPopulation();
     this.population = new Population(initialPopulation, this.getRandomPlant, this.sortByFitness);
@@ -13,7 +13,7 @@ export default class GardenGenerator {
 
   generate = (colors) => {
     this.colors = colors || {};
-    for (let i = 0; i < 1000; i++) {
+    for (let i = 0; i < 300; i++) {
       this.population.next();
     }
 
@@ -116,7 +116,7 @@ export default class GardenGenerator {
     while (true) {
       const plant = this.getRandomPlant();
       current_area += Math.PI * plant.type.r * plant.type.r * plant.count;
-      if (current_area < area * 0.9) {
+      if (current_area < area * 0.5) {
         plants.push(plant);
       } else {
         return plants;
@@ -158,3 +158,107 @@ export default class GardenGenerator {
     });
   }
 }
+
+
+
+
+    // const dogwoodColor_partsun = '#000';
+    // const dogwoodOptions_partsun = {
+    //   render: {
+    //     fillStyle: dogwoodColor_partsun,
+    //     strokeStyle: dogwoodColor_partsun,
+    //     lineWidth: 0,
+    //     opacity: 0.2
+    //   },
+    //   isStatic: true
+    // };
+    // World.add(world, [
+    //     // walls
+    //     Bodies.circle(61, 60+20, 29+5, dogwoodOptions_partsun),
+    //     Bodies.circle(230, 68+20, 27+5, dogwoodOptions_partsun)
+    // ]);
+
+    // const dogwoodColor_partshade = '#000';
+    // const dogwoodOptions_partshade = {
+    //   render: {
+    //     fillStyle: dogwoodColor_partshade,
+    //     strokeStyle: dogwoodColor_partshade,
+    //     lineWidth: 0,
+    //     opacity: 0.4
+    //   },
+    //   isStatic: true
+    // };
+    // World.add(world, [
+    //     // walls
+    //     Bodies.circle(61, 60+10, 29, dogwoodOptions_partshade),
+    //     Bodies.circle(230, 68+10, 27, dogwoodOptions_partshade)
+    // ]);
+
+    // const dogwoodColor_shade = '#000';
+    // const dogwoodOptions_shade = {
+    //   render: {
+    //     fillStyle: dogwoodColor_shade,
+    //     strokeStyle: dogwoodColor_shade,
+    //     lineWidth: 0,
+    //     opacity: 0.6
+    //   },
+    //   isStatic: true
+    // };
+    // World.add(world, [
+    //     // walls
+    //     Bodies.circle(61, 60, 29-7, dogwoodOptions_shade),
+    //     Bodies.circle(230, 68, 27-7, dogwoodOptions_shade)
+    // ]);
+
+
+
+    // const dougFirColor_partsun = '#000';
+    // const dougFirOptions_partsun = {
+    //   render: {
+    //     fillStyle: dougFirColor_partsun,
+    //     strokeStyle: dougFirColor_partsun,
+    //     lineWidth: 0,
+    //     opacity: 0.2
+    //   },
+    //   isStatic: true
+    // };
+    // World.add(world, [
+    //     // walls
+    //     Bodies.circle(23, 19+30, 35+7, dougFirOptions_partsun),
+    //     Bodies.circle(80, 8+30, 35+7, dougFirOptions_partsun),
+    //     Bodies.circle(233, 9+30, 50+10, dougFirOptions_partsun),
+    // ]);
+
+    // const dougFirColor_partshade = '#000';
+    // const dougFirOptions_partshade = {
+    //   render: {
+    //     fillStyle: dougFirColor_partshade,
+    //     strokeStyle: dougFirColor_partshade,
+    //     lineWidth: 0,
+    //     opacity: 0.4
+    //   },
+    //   isStatic: true
+    // };
+    // World.add(world, [
+    //     // walls
+    //     Bodies.circle(23, 19+15, 35+3, dougFirOptions_partshade),
+    //     Bodies.circle(80, 8+15, 35+3, dougFirOptions_partshade),
+    //     Bodies.circle(233, 9+15, 50+5, dougFirOptions_partshade),
+    // ]);
+
+    // const dougFirColor_shade = '#000';
+    // const dougFirOptions_shade = {
+    //   render: {
+    //     fillStyle: dougFirColor_shade,
+    //     strokeStyle: dougFirColor_shade,
+    //     lineWidth: 0,
+    //     opacity: 0.6
+    //   },
+    //   isStatic: true
+    // };
+    // World.add(world, [
+    //     // walls
+    //     Bodies.circle(23, 19, 35-7, dougFirOptions_shade),
+    //     Bodies.circle(80, 8, 35-7, dougFirOptions_shade),
+    //     Bodies.circle(233, 9, 50-10, dougFirOptions_shade),
+    // ]);

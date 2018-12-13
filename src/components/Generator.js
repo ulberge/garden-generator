@@ -64,6 +64,7 @@ class Generator extends Component {
     };
     colors.forEach(color => newState.colors[color.key] = 50);
     this.setState(newState);
+    this.generate();
   }
 
   start = e => {
@@ -72,16 +73,23 @@ class Generator extends Component {
   }
 
   generate = e => {
+    // this.setState({
+    //   running: true
+    // });
     const { updateModel } = this.props;
     const { colors } = this.state;
     const model = this.generator.generate(colors);
     updateModel(model);
 
+    // this.startTimeout = setTimeout(() => {
+    //   clearTimeout(this.startTimeout);
+    //   this.setState({
+    //     running: false
+    //   });
+    // }, 2000);
+
     // Recursively call generate until cleared
-    this.startTimeout = setTimeout(() => this.generate(), 2000);
-    this.setState({
-      running: true
-    });
+    // this.startTimeout = setTimeout(() => this.stop(), 2000);
   }
 
   stop = e => {
@@ -129,9 +137,9 @@ class Generator extends Component {
           <Button variant="contained" style={{ marginRight: '20px' }} onClick={e => this.start(e)}>
             Generate
           </Button>
-          <Button variant="contained" onClick={e => this.stop(e)}>
+          {/*<Button variant="contained" onClick={e => this.stop(e)}>
             Stop
-          </Button>
+          </Button>*/}
           { running ? <LinearProgress color="primary" style={styles.progress}/> : null }
         </div>
         <h3>Color</h3>

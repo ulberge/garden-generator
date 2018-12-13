@@ -6,8 +6,6 @@ import View3D from '../js/View3D';
 /** Class for the 3D fly throughs of the model */
 export default class Display3D extends React.Component {
   componentDidMount() {
-    this.isWired = false;
-
     this.container = document.getElementById('display3D');
     this.view = new View3D(this.container);
     this.renderModel();
@@ -25,7 +23,7 @@ export default class Display3D extends React.Component {
   }
 
   render() {
-    this.width = 1200;
+    this.width = 1000;
     this.height = 300;
 
     return (
