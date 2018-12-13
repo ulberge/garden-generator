@@ -28,11 +28,24 @@ class PlantMenu extends Component {
               <Checkbox
                 checked={!this.state.unchecked[key]}
                 onChange={() => {
+                  const { onChange } = this.props;
                   const { unchecked } = this.state;
                   const current = unchecked[key];
-                  unchecked[key] = !current;
-                  PlantsEnum[key].unchecked = current;
+
+                  if (!current && Object.values(PlantsEnum).filter(type => !type.unchecked).length < 3) {
+                    return;
+                  }
+
+                  unchecked[key] = !current ? true : false;
+                  PlantsEnum[key].unchecked = unchecked[key];
                   this.setState({ unchecked });
+
+                  if (this.changeList) {
+                    clearTimeout(this.changeList);
+                  }
+                  this.changeList = setTimeout(() => {
+                    onChange();
+                  }, 2000);
                 }}
                 color="default"
                 value={'checked' + key}
@@ -58,15 +71,11 @@ class PlantMenu extends Component {
     }
   }
 
-
   render() {
     const plantListElements = this.getPlantListElements();
 
     return (
-      <table>
-        <thead>
-          <th></th>
-        </thead>
+      <table style={{ width: '100%' }}>
         <tbody>
           { plantListElements }
         </tbody>

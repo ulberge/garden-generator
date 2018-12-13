@@ -9,10 +9,14 @@ export default class PhenotypeGenerator {
     })
   }
 
-  generatePhenotype(i, genotype, onSimulationFinished) {
+  generatePhenotype(i, individual, onSimulationFinished) {
+    if (individual.phenotype) {
+      onSimulationFinished(individual.phenotype);
+      return;
+    }
     const simulator = this.simulators[i];
     simulator.clearPlants();
-    simulator.addPlants(genotype);
+    simulator.addPlants(individual.genotype);
     // Keep checking if physics simulator is settled
     this.simulatorChecker = this.check(simulator, onSimulationFinished);
   }

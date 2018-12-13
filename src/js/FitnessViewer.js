@@ -18,9 +18,17 @@ export default class FitnessViewer {
 
     ctx.globalAlpha = 0.9;
 
+    if (!individual || !individual.fitnessData || !individual.fitnessData.neighborPairs) {
+      return;
+    }
+
     const neighborPairs = individual.fitnessData.neighborPairs;
     neighborPairs.forEach(pair => {
       const { p0, p1, contrast } = pair;
+      if (contrast === undefined || contrast === null) {
+        return;
+      }
+
       const x0 = p0.pos.x;
       const y0 = p0.pos.y;
       const x1 = p1.pos.x;

@@ -21,8 +21,8 @@ export default class Population {
 
     sort = () => {
       this.sortByFitness(this.individuals);
-      console.log(this.individuals.map(i => i.fitness));
-      console.log(this.individuals[0].fitnessData);
+      // console.log(this.individuals.map(i => i.fitness));
+      // console.log(this.individuals[0].fitnessData);
     }
 
     /**
@@ -35,6 +35,11 @@ export default class Population {
       const breeding_parents = individuals.slice(0, this.options.num_breeding_parents);
 
       // Take the top parents as the 'elite'
+      // const best = individuals[0];
+      // const elite_pop = [best];
+      // individuals.forEach(i => {
+      //   for ()
+      // });
       const elite_pop = individuals.slice(0, this.options.num_elite);
 
       // Create children using crossover breeding of best parents

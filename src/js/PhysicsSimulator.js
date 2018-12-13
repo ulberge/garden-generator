@@ -18,7 +18,10 @@ export default function PhysicsSimulator(el, width, height, plants, filter) {
 
     // create engine
     var engine = Engine.create({
-      enableSleeping: true
+      enableSleeping: true,
+      timing: {
+        timeScale: 0.7
+      }
     });
     var world = engine.world;
     world.gravity.scale = 0;
@@ -83,7 +86,7 @@ export default function PhysicsSimulator(el, width, height, plants, filter) {
           const type = filter.getType({ x, y });
 
           const render = {
-            fillStyle: '#FFFF00',
+            fillStyle: '#FDECA3',
             opacity: (type + 1) * 0.2
           };
 
@@ -91,6 +94,8 @@ export default function PhysicsSimulator(el, width, height, plants, filter) {
           switch (type) {
             case -1:
               category = blockedCategory;
+              render.fillStyle = '#000';
+              render.opacity = 1;
               break;
             case 0:
               category = shadeCategory;
@@ -107,6 +112,10 @@ export default function PhysicsSimulator(el, width, height, plants, filter) {
             default:
               category = blockedCategory;
               break;
+          }
+
+          if (category === blockedCategory) {
+            continue;
           }
 
           bodies.push(Bodies.rectangle(x, y, widthSection, heightSection, {
@@ -143,19 +152,17 @@ export default function PhysicsSimulator(el, width, height, plants, filter) {
             const maxShade = type.shade[1];
             for (let i = 0; i < count; i += 1) {
               const { x, y } = pos;
-              const nextPlant = Bodies.circle(x + i, y + i, r, {
+              const nextPlant = Bodies.circle(x + (Math.random()*10*i), y + (Math.random()*10*i), r, {
                 render: {
-                  fillStyle: foliageColor,
-                  strokeStyle: foliageColor,
+                  fillStyle: foliageColor == 'green' ? '#8D975B' : '#577155',
+                  strokeStyle: foliageColor == 'green' ? '#8D975B' : '#577155',
                   lineWidth: 2,
                   opacity: maxShade*0.3+0.1
                 },
                 collisionFilter: {
                     category: getFilterCategory(type.shade)
                 },
-                friction: 10,
-                restitution: 1,
-                timeScale: 10
+                friction: 1
               });
               // Add to offset the group
               bodies.push(nextPlant);
@@ -341,39 +348,22 @@ export default function PhysicsSimulator(el, width, height, plants, filter) {
         Bodies.circle(230, 68, 6, dogwoodOptions)
     ]);
 
-    // let vertices = Matter.Vertices.fromPath('0 423 78 154 143 71 229 26 328 0 455 7 508 49 578 135 672 423');
-    // Matter.Vertices.scale(vertices, 0.25, 0.25, {x:0, y:0});
-    // const grass = Bodies.fromVertices(110, 150, vertices, {
-    // //const grass = Bodies.fromVertices(420, 0, vertices, {
-    //   render: {
-    //       fillStyle: '#000',
-    //       strokeStyle: '#000',
-    //       lineWidth: 0,
-    //       opacity: 1
-    //   },
-    //   isStatic: true,
-    //   collisionFilter: {
-    //       mask: blockedCategory
-    //   }
-    // });
-    // World.add(world, grass);
-
-    // add mouse control
-    var mouse = Mouse.create(render.canvas),
-        mouseConstraint = MouseConstraint.create(engine, {
-            mouse: mouse,
-            constraint: {
-                stiffness: 0.2,
-                render: {
-                    visible: false
-                }
-            }
-        });
-
-    World.add(world, mouseConstraint);
-
-    // keep the mouse in sync with rendering
-    render.mouse = mouse;
+    let vertices = Matter.Vertices.fromPath('0 423 78 154 143 71 229 26 328 0 455 7 508 49 578 135 672 423');
+    Matter.Vertices.scale(vertices, 0.25, 0.25, {x:0, y:0});
+    const grass = Bodies.fromVertices(110, 150, vertices, {
+    //const grass = Bodies.fromVertices(420, 0, vertices, {
+      render: {
+          fillStyle: '#000',
+          strokeStyle: '#000',
+          lineWidth: 0,
+          opacity: 1
+      },
+      isStatic: true,
+      collisionFilter: {
+          mask: blockedCategory
+      }
+    });
+    World.add(world, grass);
 
     // fit the render viewport to the scene
     Render.lookAt(render, {
@@ -407,14 +397,14 @@ export default function PhysicsSimulator(el, width, height, plants, filter) {
             this.plants.push(...plants);
             setTimeout(() => {
               this.ready = true;
-            }, 4000);
+            }, 20000);
         },
         isWorldSleeping: function() {
-          // if (this.ready) {
-          //   const bodies = Composite.allBodies(world);
-          //   bodies.forEach((body) => body.isStatic = true);
-          //   return true;
-          // }
+          if (this.ready) {
+            const bodies = Composite.allBodies(world);
+            bodies.forEach((body) => body.isStatic = true);
+            return true;
+          }
 
           const bodies = Composite.allBodies(world);
           const sleeping = bodies.filter((body) => body.isSleeping);

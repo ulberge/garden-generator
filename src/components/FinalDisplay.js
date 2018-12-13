@@ -6,6 +6,8 @@ const DF_IMG = new Image();
 DF_IMG.src = './img/sprites/DOUGLAS_FIR.png';
 const PD_IMG = new Image();
 PD_IMG.src = './img/sprites/PACIFIC_DOGWOOD.png';
+const FILTER = new Image();
+FILTER.src = './img/filter.png';
 
 // convert phenotype to sprites and draw to a canvas
 export default class FinalDisplay extends Component {
@@ -15,7 +17,12 @@ export default class FinalDisplay extends Component {
     this.ctx = this.canvas.getContext('2d');
     this.fitnessViewer = new FitnessViewer([this.canvas], 4);
     this.renderPhenotype();
-    this.showFitness = false;
+    window.showFitness = false;
+    window.toggleShowFitness = () => {
+      window.showFitness = !window.showFitness;
+
+      this.renderPhenotype();
+    };
   }
 
   componentDidUpdate() {
@@ -34,6 +41,11 @@ export default class FinalDisplay extends Component {
     const { phenotype } = individual;
     const scale = 4;
     if (phenotype) {
+      // this.ctx.save();
+      // this.ctx.globalAlpha = 0.3;
+      // this.ctx.drawImage(FILTER, 0, 0, FILTER.width*4, FILTER.height*4);
+      // this.ctx.restore();
+
       phenotype.sort((i0, i1) => {
         if (i0.type.h > i1.type.h) {
           return 1;
@@ -54,10 +66,10 @@ export default class FinalDisplay extends Component {
         }
         const { x, y } = pos;
         type.draw(this.ctx, { x: x * scale, y: y * scale }, r_display * scale * 1);
-        this.ctx.beginPath();
-        this.ctx.arc(x * scale, y * scale, r * scale, 0, Math.PI * 2, true);
-        this.ctx.closePath();
-        this.ctx.stroke();
+        // this.ctx.beginPath();
+        // this.ctx.arc(x * scale, y * scale, r * scale, 0, Math.PI * 2, true);
+        // this.ctx.closePath();
+        // this.ctx.stroke();
       });
 
       // render trees
@@ -75,7 +87,7 @@ export default class FinalDisplay extends Component {
       this.ctx.restore();
     }
 
-    if (individual && individual.fitness && this.showFitness) {
+    if (individual && individual.fitness && window.showFitness) {
       this.fitnessViewer.render(0, individual);
     }
   }
@@ -83,9 +95,9 @@ export default class FinalDisplay extends Component {
   render() {
     const { individual } = this.props;
     let background = 'url("./img/background.png")';
-    if (!individual || !individual.fitness) {
-      background = 'url("./img/background_og.png")';
-    }
+    // if (!individual || !individual.fitness) {
+    //   background = 'url("./img/background_og.png")';
+    // }
 
     return (
       <div style={{ backgroundImage: background, width: '976px', height: '764px', margin: 'auto' }} >

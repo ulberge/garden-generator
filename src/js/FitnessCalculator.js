@@ -1,5 +1,6 @@
 import wdt from 'weighted-delaunay';
 import * as math from 'mathjs';
+//import PlantsEnum from './PlantsEnum';
 
 export default class FitnessCalculator {
   static calculateFitness = (phenotype, filter) => {
@@ -11,14 +12,14 @@ export default class FitnessCalculator {
 
     const neighborPairs = FitnessCalculator.getNeighborPairs(phenotype, delaunay);
 
-    const avgContrast = FitnessCalculator.calculateAverageNeighborContrast(neighborPairs);
-    const crowding = -FitnessCalculator.calculateCrowding(neighborPairs);
+    const avgContrast = FitnessCalculator.calculateAverageNeighborContrast(neighborPairs) || 0;
+    const crowding = -FitnessCalculator.calculateCrowding(neighborPairs)*4;
 
-    const legality = -FitnessCalculator.calculateLegality(phenotype, filter);
+    const legality = -FitnessCalculator.calculateLegality(phenotype, filter)*8;
 
-    const std = FitnessCalculator.calculateTotalDiversity(phenotype);
+    const std = 1-FitnessCalculator.calculateTotalDiversity(phenotype);
 
-    const fitness = ((avgContrast + std) / 2) + (10*crowding) + (100*legality);
+    const fitness = avgContrast + std + crowding + legality;
     const fitnessData = { fitness, avgContrast, std, legality, crowding, neighborPairs };
 
     return { fitness, delaunay, fitnessData };
@@ -51,10 +52,16 @@ export default class FitnessCalculator {
       const pos1 = plant1.pos;
       const distance = FitnessCalculator.getDistance(pos0.x, pos0.y, pos1.x, pos1.y);
       const overlap = (type0.r + type1.r - distance);
-      pair.overlap = overlap;
+      let overlapPercentage;
+      if (type0.r > type1.r) {
+        overlapPercentage = overlap/(type0.r);
+      } else {
+        overlapPercentage = overlap/(type1.r);
+      }
 
-      if (overlap > 0) {
-        totalOverlap += overlap/(type0.r + type1.r);
+      if (overlapPercentage > 0.6) {
+        totalOverlap += Math.pow(overlapPercentage, 2);
+        pair.overlap = overlap;
         overlapCount += 1;
       }
     });
@@ -72,8 +79,10 @@ export default class FitnessCalculator {
       const { type } = plant;
       const { r } = type;
       let area = areaByTypeMap[type.key] || 0;
-      areaByTypeMap[type.key] = area + r;
+      areaByTypeMap[type.key] = area + (r*r);
     });
+
+    //const numTypes = Object.values(PlantsEnum).filter(value => !value.unchecked).length;
 
     const values = Object.values(areaByTypeMap);
     const sum = math.sum(values);
@@ -142,12 +151,14 @@ export default class FitnessCalculator {
       }
     }
 
-    return Object.values(neighborMap);
+    const neighborPairs = Object.values(neighborMap);
+    // console.log('neighborPairs', neighborPairs.length);
+    return neighborPairs;
   }
 
   static isNextTo = (plant0, plant1) => {
     const dist = FitnessCalculator.getDistance(plant0.pos.x, plant0.pos.y, plant1.pos.x, plant1.pos.y);
-    const maxDist = (plant0.type.r + plant1.type.r) * 1.5;
+    const maxDist = (plant0.type.r + plant1.type.r) * 1.2;
     if (dist < maxDist) {
       return true;
     }
@@ -155,8 +166,8 @@ export default class FitnessCalculator {
   }
 
   static calculateContrast = (p0, p1) => {
-    if (p0.type === p1.type) {
-      return null
+    if (p0.type.key == p1.type.key) {
+      return null;
     }
 
     let contrast = 0;

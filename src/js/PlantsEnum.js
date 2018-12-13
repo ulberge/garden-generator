@@ -1,10 +1,9 @@
 const PlantsEnum = {
   VINE_MAPLE: {
     label: 'vine maple',
-    r: 60,
-    r_display: 92,
+    r: 92,
     h: 3,
-    maxNumber: 2,
+    maxNumber: 1,
     sprite: [0, 0],
     foliageColor: 'green',
     foliageShape: 'spiky',
@@ -16,67 +15,67 @@ const PlantsEnum = {
     label: 'salal',
     r: 30,
     h: 2,
-    maxNumber: 5,
+    maxNumber: 7,
     sprite: [0, 0],
     foliageColor: 'green',
     foliageShape: 'ovate',
     foliageSize: 'md',
-    shade: [0, 1],
+    shade: [0, 2],
     moisture: [0, 1]
   },
   TALL_OREGON_GRAPE: {
     label: 'tall Oregon grape',
     r: 50,
     h: 2,
-    maxNumber: 3,
+    maxNumber: 4,
     sprite: [0, 0],
     foliageColor: 'darkGreen',
     foliageShape: 'spiky',
     foliageSize: 'md',
-    shade: [0, 3],
+    shade: [1, 3],
     moisture: [0, 2]
   },
   BALD_HIP_ROSE: {
     label: 'bald hip rose',
     r: 40,
     h: 2,
-    maxNumber: 2,
+    maxNumber: 4,
     sprite: [0, 0],
     foliageColor: 'green',
     foliageShape: 'ovate',
     foliageSize: 'sm',
-    shade: [0, 3],
+    shade: [1, 3],
     moisture: [0, 2]
   },
   RED_ELDERBERRY: {
     label: 'red elderberry',
     r: 70,
     h: 2,
-    maxNumber: 1,
+    maxNumber: 2,
     sprite: [0, 0],
     foliageColor: 'green',
     foliageShape: 'spear',
     foliageSize: 'md',
-    shade: [0, 3],
+    shade: [1, 3],
     moisture: [0, 2]
   },
   EVERGREEN_HUCKLEBERRY: {
     label: 'evergreen huckleberry',
     r: 40,
     h: 2,
-    maxNumber: 4,
+    maxNumber: 6,
     sprite: [0, 0],
     foliageColor: 'darkGreen',
     foliageShape: 'ovate',
     foliageSize: 'sm',
-    shade: [0, 1],
+    shade: [0, 2],
     moisture: [0, 1]
   },
   BEACH_STRAWBERRY: {
     label: 'beach strawberry',
-    r: 15,
+    r: 25,
     h: 0,
-    maxNumber: 8,
+    maxNumber: 6,
     sprite: [0, 0],
     foliageColor: 'darkGreen',
     foliageShape: 'ovate',
@@ -98,21 +97,21 @@ const PlantsEnum = {
   },
   FRINGECUP: {
     label: 'fringecup',
-    r: 20,
+    r: 26,
     h: 1,
     maxNumber: 6,
     sprite: [0, 0],
     foliageColor: 'green',
     foliageShape: 'ovate',
     foliageSize: 'md',
-    shade: [0, 1],
+    shade: [1, 3],
     moisture: [1, 1]
   },
   INSIDE_OUT_FLOWER: {
     label: 'inside-out flower',
-    r: 20,
+    r: 26,
     h: 0,
-    maxNumber: 8,
+    maxNumber: 6,
     sprite: [0, 0],
     foliageColor: 'green',
     foliageShape: 'ovate',
@@ -123,10 +122,10 @@ const PlantsEnum = {
 };
 
 Object.keys(PlantsEnum).forEach(key => {
-  PlantsEnum[key].r = PlantsEnum[key].r / 3.8;
-  if (PlantsEnum[key].r_display) {
-    PlantsEnum[key].r_display = PlantsEnum[key].r_display / 3.8;
-  }
+  PlantsEnum[key].r = PlantsEnum[key].r / 4;
+  // if (PlantsEnum[key].r_display) {
+  //   PlantsEnum[key].r_display = PlantsEnum[key].r_display / 4;
+  // }
 
   PlantsEnum[key].key = key;
 

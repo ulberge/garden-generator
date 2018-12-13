@@ -12,10 +12,10 @@ export default class GardenDesignPopulation {
     this.filter = filter;
 
     this.population = new Population(this.getInitialPopulation(), {
-      num_breeding_parents: popSize / 4,
-      num_elite: popSize / 4,
-      num_crossover: popSize / 4,
-      num_mutate: popSize / 2,
+      num_breeding_parents: 4,
+      num_elite: 3,
+      num_crossover: 3,
+      num_mutate: 6,
       mutation_rate: 0.1
     });
     this.population.getRandomGene = this.getRandomGene;
@@ -50,6 +50,8 @@ export default class GardenDesignPopulation {
   }
 
   createNewIndividual = (genotype) => {
+    this.fill(genotype);
+
     return {
       id: GARDEN_ID.getNextID(),
       genotype,
@@ -60,25 +62,45 @@ export default class GardenDesignPopulation {
 
   // Get a list of random, unique pts of length num_pts
   getRandomGenotype = () => {
+    const plants = [];
+    this.fill(plants);
+    return plants;
+  }
+
+  fill = (plants) => {
     const { w, h } = this.bounds;
     const area = w * h;
-    let current_area = 0;
+    let current_area = this.getCurrentArea(plants);
 
-    const plants = [];
-    while (true) {
+    let i = 1000;
+    while (i > 0) {
       const plant = this.getRandomGene();
-      current_area += Math.PI * plant.type.r * plant.type.r * plant.count;
-      if (current_area < area * 0.75) {
-        plants.push(plant);
-      } else {
-        return plants;
+      if (plant) {
+        current_area += Math.PI * plant.type.r * plant.type.r * plant.count;
+        if (current_area < area * 0.8) {
+          plants.push(plant);
+        } else {
+          return plants;
+        }
       }
+      i -= 1;
     }
+  }
+
+  getCurrentArea = (plants) => {
+    let current_area = 0;
+    plants.forEach(plant => {
+      current_area += Math.PI * plant.type.r * plant.type.r * plant.count;
+    });
+    return current_area;
   }
 
   // Get a random point within the bounds
   getRandomGene = () => {
-    const type = this.getRandomPlantType();
+    let type;
+    do {
+      type = this.getRandomPlantType();
+    } while (type.unchecked)
 
     const { x, y, w, h } = this.bounds;
     let pos;
@@ -97,9 +119,7 @@ export default class GardenDesignPopulation {
   }
 
   getRandomPlantType = () => {
-    var values = Object.values(PlantsEnum)
-    var filteredValues = values.filter(value => !value.unchecked);
-    const keys = filteredValues.map(v => v.key);
+    const keys = Object.keys(PlantsEnum);
     return PlantsEnum[keys[Math.floor(keys.length * Math.random())]];
   }
 }

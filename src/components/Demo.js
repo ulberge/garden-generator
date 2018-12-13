@@ -2,12 +2,10 @@ import React, { Component } from 'react';
 
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
 
 import FinalDisplay from './FinalDisplay';
 import PlantMenu from './PlantMenu';
 import GardenDesignPopulation from '../js/GardenDesignPopulation';
-import PlantsEnum from '../js/PlantsEnum';
 
 import FitnessCalculator from '../js/FitnessCalculator';
 import PhenotypeGenerator from '../js/PhenotypeGenerator';
@@ -31,7 +29,8 @@ export default class Demo extends Component {
   componentDidMount() {
     this.popSize = this.state.remaining;
     this.pause = false;
-    this.generation = 0;
+    this.generation = 1;
+    this.runCount = 1;
 
     const simulatorDisplays = [];
     const fitnessDisplays = [];
@@ -55,44 +54,61 @@ export default class Demo extends Component {
 
   restart = () => {
     this.pause = false;
-    this.generation = 0;
+    this.generation = 1;
+    this.runCount += 1;
+    this.fitnessViewer.clear();
+    this.setState({
+      bestIndividual: null,
+      remaining: popSize
+    });
     this.population = new GardenDesignPopulation(this.popSize, this.filter);
     this.run();
   }
 
   run = () => {
     const individuals = this.population.getIndividuals();
+    const runCount = this.runCount;
     individuals.forEach((individual, i) => {
-      this.phenotypeGenerator.generatePhenotype(i, individual.genotype, phenotype => { this.onPhenotypeGenerated(individual, phenotype) });
+      this.phenotypeGenerator.generatePhenotype(i, individual, phenotype => { this.onPhenotypeGenerated(i, runCount, individual, phenotype) });
     });
   }
 
-  onPhenotypeGenerated = (individual, phenotype) => {
-    individual.phenotype = phenotype;
-    const { fitness, fitnessData } = FitnessCalculator.calculateFitness(phenotype, this.filter);
-    individual.fitness = fitness;
-    individual.fitnessData = fitnessData;
+  onPhenotypeGenerated = (i, runCount, individual, phenotype) => {
+    console.log(runCount, this.runCount, this.state.remaining-1);
+    if (runCount !== this.runCount) {
+      return;
+    }
+
+    if (!individual.fitness) {
+      individual.phenotype = phenotype;
+      const { fitness, fitnessData } = FitnessCalculator.calculateFitness(phenotype, this.filter);
+      individual.fitness = fitness;
+      individual.fitnessData = fitnessData;
+    }
+    this.fitnessViewer.render(i, individual);
     const remaining = this.state.remaining - 1;
     // Check if done calculating
     if (remaining === 0) {
       // show calculations
-      const individuals = this.population.getIndividuals();
-      individuals.forEach((individual, i) => this.fitnessViewer.render(i, individual));
+      // const individuals = this.population.getIndividuals();
+      // individuals.forEach((individual, i) => this.fitnessViewer.render(i, individual));
 
+      this.population.sort();
+      const bestIndividual = this.population.getBestIndividual();
+      this.setState({ remaining: this.popSize, bestIndividual });
+
+      const pauseTime = 500;
       // And then next generation after pause
       const unPause = () => {
         if (this.pause) {
-          setTimeout(unPause, 2000);
+          setTimeout(unPause, pauseTime);
           return;
         }
 
         this.fitnessViewer.clear();
-        this.population.sort();
-        const bestIndividual = this.population.getBestIndividual();
-        this.setState({ remaining: this.popSize, bestIndividual });
         this.next();
       };
-      setTimeout(unPause, 2000);
+      setTimeout(unPause, pauseTime);
     } else {
       this.setState({ remaining });
     }
@@ -115,7 +131,7 @@ export default class Demo extends Component {
     const simulatorElements = [];
     for (let i = 0; i < popSize; i += 1) {
       simulatorElements.push((
-        <Grid item xs={3}>
+        <Grid item xs={4} style={{ transform: 'scale(1.6)', margin: '55px 0' }}>
           <div style={{ position: 'relative', width: '244px', height: '191px', margin: '5px 0' }}>
             <div key={i} id={'simulation' + i}></div>
             <canvas id={'fitness' + i} width={244} height={191}
@@ -129,7 +145,9 @@ export default class Demo extends Component {
 
     let text = '';
     if (bestIndividual && bestIndividual.fitnessData) {
-      text += 'generation: ' + this.generation;
+      text += 'run #: ' + this.runCount;
+      text += ', generation: ' + this.generation;
+      text += ', id: ' + bestIndividual.id;
       text += ', fitness: ' + Number.parseFloat(bestIndividual.fitnessData.fitness).toPrecision(6);
       text += ', legality: ' + Number.parseFloat(bestIndividual.fitnessData.legality).toPrecision(6);
       text += ', crowding: ' + Number.parseFloat(bestIndividual.fitnessData.crowding).toPrecision(6);
@@ -149,24 +167,30 @@ export default class Demo extends Component {
           </Grid>
           <Grid item xs={3}>
             <div style={{ background: '#CADEA7' }}>
-              <h4 style={{ color: '#000', margin: 0, padding: '10px' }}>Plants</h4>
-              <Button variant="contained" style={{ margin: '20px' }} onClick={this.restart}>
-                Restart
-              </Button>
-              <Button variant="contained" style={{ margin: '20px' }} onClick={() => this.pause = !this.pause}>
-                Pause
-              </Button>
+              <h4 style={{ color: '#000', margin: 0, padding: '10px 0' }}>Plants</h4>
             </div>
-            <PlantMenu />
+            <PlantMenu onChange={this.restart}/>
           </Grid>
         </Grid>
-        <div style={{ position: 'relative', top: '0px' }}>
+        <div style={{ position: 'relative', left: '-225px', top: '-150px', fontSize: '12px' }}>
+          All illustrations from the King County Native Plant Guide (https://green2.kingcounty.gov/gonative/Plan.aspx?Act=view&PlanID=13)
+        </div>
+        <div style={{ position: 'relative', top: '-100px', paddingBottom: '80px', margin: '0' }}>
           <div>
+            <Button variant="contained" style={{ margin: '20px' }} onClick={this.restart}>
+              Restart
+            </Button>
+            <Button variant="contained" style={{ margin: '20px' }} onClick={() => this.pause = !this.pause}>
+              Pause Breeding
+            </Button>
+            <Button variant="contained" style={{ margin: '20px' }} onClick={window.toggleShowFitness}>
+              Show Fitness
+            </Button>
             <div style={{ padding: '10px 0' }}>
               <span>{text}</span>
             </div>
           </div>
-          <Grid container spacing={0} style={{ display: display }} >
+          <Grid container spacing={0} style={{ display: display, marginLeft: '120px' }} >
             { simulatorElements }
           </Grid>
         </div>

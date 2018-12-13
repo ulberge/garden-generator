@@ -2,86 +2,64 @@ import React, { Component } from 'react';
 
 import Grid from '@material-ui/core/Grid';
 import Button from '@material-ui/core/Button';
-import Checkbox from '@material-ui/core/Checkbox';
 
 import FinalDisplay from './FinalDisplay';
-import PlantMenu from './PlantMenu';
+import Simulators from './Simulators';
+import Text from './Text';
+
 import GardenDesignPopulation from '../js/GardenDesignPopulation';
-import PlantsEnum from '../js/PlantsEnum';
 
 import FitnessCalculator from '../js/FitnessCalculator';
 import PhenotypeGenerator from '../js/PhenotypeGenerator';
 import FitnessViewer from '../js/FitnessViewer';
 import Filter from '../js/Filter';
 
-const popSize = 12;
-
-// Maintains a population of individuals
-// Each individual has a genotype and a fitness
-// When all the fitnesses are calculated, a new generation is produced
 export default class Run extends Component {
   state = {
-    individuals: [],
-    bestIndividual: null,
-    remaining: popSize,
-    displayPopulation: true,
-    filter: null
+    bestIndividual: null
   }
 
   componentDidMount() {
-    this.popSize = this.state.remaining;
-    this.generation = 0;
-
-    const simulatorDisplays = [];
-    const fitnessDisplays = [];
-    for (let i = 0; i < this.popSize; i += 1) {
-      const el = document.getElementById('simulation' + i);
-      simulatorDisplays.push(el);
-      const fitnessEl = document.getElementById('fitness' + i);
-      fitnessDisplays.push(fitnessEl);
-    }
-    this.fitnessViewer = new FitnessViewer(fitnessDisplays);
+    const { popSize } = this.props;
+    this.remaining = popSize;
 
     this.filter = new Filter(() => {
-      this.phenotypeGenerator = new PhenotypeGenerator(simulatorDisplays, this.filter);
-      // Create a population of garden designs
-      this.population = new GardenDesignPopulation(this.popSize, this.filter);
+      if (!this.phenotypeGenerator && !this.fitnessViewer) {
+        const simulatorDisplays = [];
+        const fitnessDisplays = [];
+        for (let i = 0; i < popSize; i += 1) {
+          const simulatorEl = document.getElementById('simulation' + i);
+          simulatorDisplays.push(simulatorEl);
+          const fitnessEl = document.getElementById('fitness' + i);
+          fitnessDisplays.push(fitnessEl);
+        }
+        this.phenotypeGenerator = new PhenotypeGenerator(simulatorDisplays, this.filter);
+        this.fitnessViewer = new FitnessViewer(fitnessDisplays);
+      }
+
+      this.population = new GardenDesignPopulation(popSize, this.filter);
       this.run();
     });
-
-    this.setState({ filter: this.filter });
   }
 
   run = () => {
     const individuals = this.population.getIndividuals();
     individuals.forEach((individual, i) => {
-      this.phenotypeGenerator.generatePhenotype(i, individual.genotype, phenotype => { this.onPhenotypeGenerated(individual, phenotype) });
+      this.phenotypeGenerator.generatePhenotype(i, individual.genotype, phenotype => {
+        this.onPhenotypeGenerated(i, individual, phenotype) });
     });
   }
 
-  // Breed the next generation based on the fitnesses of the last
-  next = () => {
-    // Breed a new group of individuals based on fitnesses
-    this.population.next();
-    const individuals = this.population.getIndividuals();
-    this.generation += 1;
-    this.setState({ individuals });
-
-    this.run();
-  }
-
-  onPhenotypeGenerated = (individual, phenotype) => {
-    individual.phenotype = phenotype;
+  onPhenotypeGenerated = (i, individual, phenotype) => {
     const { fitness, fitnessData } = FitnessCalculator.calculateFitness(phenotype, this.filter);
+    individual.phenotype = phenotype;
     individual.fitness = fitness;
     individual.fitnessData = fitnessData;
-    const remaining = this.state.remaining - 1;
-    // Check if done calculating
-    if (remaining === 0) {
-      // show calculations
-      const individuals = this.population.getIndividuals();
-      individuals.forEach((individual, i) => this.fitnessViewer.render(i, individual));
+    this.fitnessViewer.render(i, individual);
 
+    this.remaining -= 1;
+    // Check if done calculating
+    if (this.remaining === 0) {
       // And then next generation after pause
       const unPause = () => {
         if (this.pause) {
@@ -92,60 +70,42 @@ export default class Run extends Component {
         this.fitnessViewer.clear();
         this.population.sort();
         const bestIndividual = this.population.getBestIndividual();
-        this.setState({ remaining: this.popSize, bestIndividual });
-        this.next();
+        this.setState({ remaining: this.props.popSize, bestIndividual });
+        this.population.next();
+        this.run();
       };
       setTimeout(unPause, 2000);
-    } else {
-      this.setState({ remaining });
     }
   }
 
   render() {
-    const { bestIndividual, displayPopulation } = this.state;
-
-    const simulatorElements = [];
-    for (let i = 0; i < popSize; i += 1) {
-      simulatorElements.push((
-        <Grid item xs={3}>
-          <div style={{ position: 'relative', width: '244px', height: '191px', margin: '5px 0' }}>
-            <div key={i} id={'simulation' + i}></div>
-            <canvas id={'fitness' + i} width={244} height={191}
-              style={{ background: 'transparent', position: 'absolute',  top: 0, left: 0 }} />
-          </div>
-        </Grid>
-      ));
-    }
-
-    const display = displayPopulation ? 'flex' : 'none';
-
-    let text = '';
-    if (bestIndividual && bestIndividual.fitnessData) {
-      text += 'generation: ' + this.generation;
-      text += ', fitness: ' + Number.parseFloat(bestIndividual.fitnessData.fitness).toPrecision(6);
-      text += ', legality: ' + Number.parseFloat(bestIndividual.fitnessData.legality).toPrecision(6);
-      text += ', crowding: ' + Number.parseFloat(bestIndividual.fitnessData.crowding).toPrecision(6);
-      text += ', avgContrast: ' + Number.parseFloat(bestIndividual.fitnessData.avgContrast).toPrecision(6);
-      text += ', diversity: ' + Number.parseFloat(bestIndividual.fitnessData.std).toPrecision(6);
-    }
+    const { popSize } = this.props;
+    const { bestIndividual, filter } = this.state;
 
     return (
       <div>
-        <div style={{ position: 'relative', left: '-100px', top: '0px' }}>
-          <div style={{ transform: 'scale(0.787)', transformOrigin: 'top' }}>
-            <FinalDisplay individual={bestIndividual} filter={this.state.filter} />
-          </div>
-        </div>
-        <div style={{ position: 'relative', top: '0px' }}>
-          <div>
-            <div style={{ padding: '10px 0' }}>
-              <span>{text}</span>
+        <Grid container spacing={24}>
+          <Grid item xs={6}>
+            <div style={{ position: 'relative', top: '5px', left: '-170px' }}>
+              <div style={{ transform: 'scale(0.75)', transformOrigin: 'top' }}>
+                <FinalDisplay individual={bestIndividual} filter={filter} />
+              </div>
             </div>
-          </div>
-          <Grid container spacing={0} style={{ display: display }} >
-            { simulatorElements }
+            <div style={{ position: 'relative', top: '-180px', left: '0' }}>
+              <Text individual={bestIndividual} />
+            </div>
           </Grid>
-        </div>
+          <Grid item xs={6} >
+            <Button variant="contained" style={{ margin: '20px' }} onClick={() => this.pause = !this.pause }>
+              Pause
+            </Button>
+            <div style={{ position: 'relative', top: '-20px', left: '20px' }}>
+              <div style={{ transform: 'scale(0.75)', transformOrigin: 'top' }}>
+                <Simulators popSize={popSize} />
+              </div>
+            </div>
+          </Grid>
+        </Grid>
       </div>
     );
   }
