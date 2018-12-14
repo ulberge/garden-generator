@@ -1,7 +1,9 @@
+import SitePlan from './SitePlan';
+
 export default class Filter {
   constructor(onLoad) {
     var img = new Image();
-    img.src = './img/filter.png';
+    img.src = SitePlan.filterImg;
     img.onload = () => {
       const canvas = document.createElement('canvas');
       canvas.width = img.width;

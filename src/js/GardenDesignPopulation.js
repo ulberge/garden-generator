@@ -2,15 +2,19 @@ import Population from './Population';
 import PlantsEnum from './PlantsEnum';
 import ID from './ID';
 
+// Universal garden id incrementor
 const GARDEN_ID = new ID();
 
+// Class to wrap around the generic Population class and make it work for garden designs
 export default class GardenDesignPopulation {
   constructor(popSize, filter) {
     // x, y, w, h
     this.bounds = { x: 0, y: 0, w: 244, h: 191 };
     this.popSize = popSize;
+    // Filter object that has boundary and sunlight info
     this.filter = filter;
 
+    // Create a generic population for the evolutionary algorithm
     this.population = new Population(this.getInitialPopulation(), {
       num_breeding_parents: 4,
       num_elite: 3,
@@ -18,15 +22,18 @@ export default class GardenDesignPopulation {
       num_mutate: 6,
       mutation_rate: 0.1
     });
+    // Add specific functions for garden designs
     this.population.getRandomGene = this.getRandomGene;
     this.population.createNewIndividual = this.createNewIndividual;
     this.bestIndividual = this.population.individuals[0];
   }
 
-  next = (fitnesses) => {
-    this.population.next(fitnesses);
+  // Update population to the next generation based on the calculated fitnesses (assumes fitnesses have been added)
+  next = () => {
+    this.population.next();
   }
 
+  // Sort the population in place (assumes fitnesses have been added)
   sort = () => {
     this.population.sort();
   }
@@ -39,6 +46,7 @@ export default class GardenDesignPopulation {
     return this.population.individuals[0];
   }
 
+  // Get a random population of garden designs
   getInitialPopulation = () => {
     const individuals = []
     for (let i = 0; i < this.popSize; i += 1) {
@@ -49,6 +57,7 @@ export default class GardenDesignPopulation {
     return individuals;
   }
 
+  // Get a random garden design
   createNewIndividual = (genotype) => {
     this.fill(genotype);
 
@@ -60,18 +69,20 @@ export default class GardenDesignPopulation {
     };
   }
 
-  // Get a list of random, unique pts of length num_pts
+  // Get a random list of plants of approximately the right area
   getRandomGenotype = () => {
     const plants = [];
     this.fill(plants);
     return plants;
   }
 
+  // Fill a list of plants with randomly place plants to match approximately the right area
   fill = (plants) => {
     const { w, h } = this.bounds;
     const area = w * h;
     let current_area = this.getCurrentArea(plants);
 
+    // Keep adding plants until area estimates are met
     let i = 1000;
     while (i > 0) {
       const plant = this.getRandomGene();
@@ -87,6 +98,7 @@ export default class GardenDesignPopulation {
     }
   }
 
+  // Get the current total area of the plants in a list
   getCurrentArea = (plants) => {
     let current_area = 0;
     plants.forEach(plant => {
@@ -97,10 +109,7 @@ export default class GardenDesignPopulation {
 
   // Get a random point within the bounds
   getRandomGene = () => {
-    let type;
-    do {
-      type = this.getRandomPlantType();
-    } while (type.unchecked)
+    const type = this.getRandomPlantType();
 
     const { x, y, w, h } = this.bounds;
     let pos;
@@ -118,8 +127,13 @@ export default class GardenDesignPopulation {
     return { pos, type, count };
   }
 
+  // Get a random plant type
   getRandomPlantType = () => {
     const keys = Object.keys(PlantsEnum);
-    return PlantsEnum[keys[Math.floor(keys.length * Math.random())]];
+    let type;
+    do {
+      type = PlantsEnum[keys[Math.floor(keys.length * Math.random())]];
+    } while (type.unchecked)
+    return type;
   }
 }

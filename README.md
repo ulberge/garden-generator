@@ -1,3 +1,12 @@
+Garden Generator by Erik Ulberg
+Design Computation 2 F18
+CMU
+
+Final Project for Design Computation 2 F18 at CMU by Erik Ulberg. It uses an evolutionary algorithm to generate new versions of a garden design by King County (https://green2.kingcounty.gov/gonative/Plan.aspx?Act=view&PlanID=13) that are viable and optimized for foliage contrast between neighboring plants and the overall diversity of the garden.
+
+The relevant files to look at are src/components/* and src/js/*
+
+
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
 ## Available Scripts

@@ -1,10 +1,13 @@
 
+// Class to handle rendering the fitness calculations to a canvas
 export default class FitnessViewer {
   constructor(displays, scale=1) {
+    // List of displays to render to
     this.displays = displays;
     this.scale = scale;
   }
 
+  // Clear all the fitness displays
   clear = () => {
     this.displays.forEach(canvas => {
       const ctx = canvas.getContext('2d');
@@ -12,16 +15,25 @@ export default class FitnessViewer {
     })
   }
 
+  // Render this individual's fitnessData to display #i
   render = (i, individual) => {
     const canvas = this.displays[i];
     const ctx = canvas.getContext('2d');
 
     ctx.globalAlpha = 0.9;
 
+    // Make sure fitness has been calculated already before proceeding
     if (!individual || !individual.fitnessData || !individual.fitnessData.neighborPairs) {
       return;
     }
 
+    this.drawNeighborContrast();
+    this.drawOverlappingPlants();
+    this.drawIllegalPlants();
+  }
+
+  // Draw lines between neighbors as green for 3 contrast, yellow for 2 contrasts, red for 1, and pink for 0
+  drawNeighborContrast = (ctx, individual) => {
     const neighborPairs = individual.fitnessData.neighborPairs;
     neighborPairs.forEach(pair => {
       const { p0, p1, contrast } = pair;
@@ -53,7 +65,11 @@ export default class FitnessViewer {
       ctx.lineWidth = 1 * this.scale;
       ctx.stroke();
     });
+  }
 
+  // Draw heavily overlapping pairs with a red outline of width equal to overlap
+  drawOverlappingPlants = (ctx, individual) => {
+    const neighborPairs = individual.fitnessData.neighborPairs;
     neighborPairs.forEach(pair => {
       const { p0, p1, overlap } = pair;
 
@@ -64,8 +80,10 @@ export default class FitnessViewer {
         this.drawPlantOutline(ctx, p1, '#FF0000', o1);
       }
     });
+  }
 
-    // draw illegal plants as red
+  // Draw illegal plants as transparent red circle
+  drawIllegalPlants = (ctx, individual) => {
     individual.phenotype.forEach(plant => {
       if (plant.isIllegal) {
         this.drawPlantFillCircle(ctx, plant, '#FF0000');
@@ -73,6 +91,7 @@ export default class FitnessViewer {
     });
   }
 
+  // Draw a circle outline for this plant with the given color and line width
   drawPlantOutline = (ctx, plant, color, lineWidth) => {
     // draw plant
     const { pos, type } = plant;
@@ -86,8 +105,8 @@ export default class FitnessViewer {
     ctx.stroke();
   }
 
+  // Draw a filled circle for this plant with the given color
   drawPlantFillCircle = (ctx, plant, color) => {
-    // draw plant
     const { pos, type } = plant;
     const { r } = type;
     const { x, y } = pos;

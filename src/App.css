@@ -24,21 +24,6 @@ li {
   margin: 10px 0;
 }
 
-.swatch {
-  display: inline-block;
-  width: 18px;
-  height: 18px;
-  vertical-align: text-bottom;
-}
-
-.Individual canvas {
-  width: 100%;
-}
-
-/*.plantIcon {
-  transform: scale(0.5);
-}*/
-
 .plantItem {
   background-color: #CFCAAC;
   margin: 0;
@@ -52,13 +37,4 @@ li {
 .plantItem span {
   line-height: 50px;
   vertical-align: top;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
 }

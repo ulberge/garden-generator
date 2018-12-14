@@ -1,6 +1,5 @@
 /**
-* Defines a class that represents a population of points for a genetic
-* algorithm
+* Defines a class that represents a population for a genetic algorithm
 */
 export default class Population {
     constructor(initialPopulation, options = {}) {
@@ -19,10 +18,9 @@ export default class Population {
       this.individuals = this.breed(this.individuals);
     }
 
+    // Sort the generation in place
     sort = () => {
       this.sortByFitness(this.individuals);
-      // console.log(this.individuals.map(i => i.fitness));
-      // console.log(this.individuals[0].fitnessData);
     }
 
     /**
@@ -35,11 +33,6 @@ export default class Population {
       const breeding_parents = individuals.slice(0, this.options.num_breeding_parents);
 
       // Take the top parents as the 'elite'
-      // const best = individuals[0];
-      // const elite_pop = [best];
-      // individuals.forEach(i => {
-      //   for ()
-      // });
       const elite_pop = individuals.slice(0, this.options.num_elite);
 
       // Create children using crossover breeding of best parents
@@ -105,13 +98,4 @@ export default class Population {
       }
     });
   }
-
-  // deepCopy = generation => {
-  //   return generation.map(individual => {
-  //     return individual.map(plant => {
-  //       const newPlant = Object.assign({}, plant);
-  //       return newPlant;
-  //     });
-  //   });
-  // }
 }

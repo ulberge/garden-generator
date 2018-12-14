@@ -1,3 +1,4 @@
+// File for encoding the plant information
 const PlantsEnum = {
   VINE_MAPLE: {
     label: 'vine maple',
@@ -122,22 +123,17 @@ const PlantsEnum = {
 };
 
 Object.keys(PlantsEnum).forEach(key => {
+  // Scale the plants for the app
   PlantsEnum[key].r = PlantsEnum[key].r / 4;
-  // if (PlantsEnum[key].r_display) {
-  //   PlantsEnum[key].r_display = PlantsEnum[key].r_display / 4;
-  // }
-
   PlantsEnum[key].key = key;
 
-  // Add draw image method
+  // Add draw method to make sprite render easy
   const img = new Image();
   img.src = './img/sprites/' + key + '.png';
   PlantsEnum[key].draw = (ctx, pos, r) => {
     if (ctx && img) {
       const { x, y } = pos;
       ctx.drawImage(img, x - r, y - r, r * 2, r * 2);
-      //ctx.drawImage(img, x - (img.width * scale/2), y - (img.height * scale/2), img.width * scale, img.height * scale
-      //ctx.drawImage(img, x, y, );
     }
   };
 });

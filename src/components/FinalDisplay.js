@@ -41,11 +41,6 @@ export default class FinalDisplay extends Component {
     const { phenotype } = individual;
     const scale = 4;
     if (phenotype) {
-      // this.ctx.save();
-      // this.ctx.globalAlpha = 0.3;
-      // this.ctx.drawImage(FILTER, 0, 0, FILTER.width*4, FILTER.height*4);
-      // this.ctx.restore();
-
       phenotype.sort((i0, i1) => {
         if (i0.type.h > i1.type.h) {
           return 1;
@@ -66,6 +61,7 @@ export default class FinalDisplay extends Component {
         }
         const { x, y } = pos;
         type.draw(this.ctx, { x: x * scale, y: y * scale }, r_display * scale * 1);
+        // render the circle from the physics simulator
         // this.ctx.beginPath();
         // this.ctx.arc(x * scale, y * scale, r * scale, 0, Math.PI * 2, true);
         // this.ctx.closePath();
@@ -93,11 +89,7 @@ export default class FinalDisplay extends Component {
   }
 
   render() {
-    const { individual } = this.props;
     let background = 'url("./img/background.png")';
-    // if (!individual || !individual.fitness) {
-    //   background = 'url("./img/background_og.png")';
-    // }
 
     return (
       <div style={{ backgroundImage: background, width: '976px', height: '764px', margin: 'auto' }} >

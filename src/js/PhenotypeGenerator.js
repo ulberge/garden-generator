@@ -1,14 +1,17 @@
 import PhysicsSimulator from './PhysicsSimulator';
 
-// Generate a phenotype from the genotype
+// Class to handle generating a phenotype from the genotype
+// It recycles the PhysicsSimulators and takes care of waiting for them to finish
 export default class PhenotypeGenerator {
   constructor(displays, filter) {
     this.simulators = [];
     displays.forEach(display => {
-      this.simulators.push(PhysicsSimulator(display, 244, 191, [], filter));
+      this.simulators.push(new PhysicsSimulator(display, 244, 191, filter));
     })
   }
 
+  // Insert this individual and its genotype into the appropriate simulator
+  // to calculate the phenotype
   generatePhenotype(i, individual, onSimulationFinished) {
     if (individual.phenotype) {
       onSimulationFinished(individual.phenotype);
@@ -21,6 +24,7 @@ export default class PhenotypeGenerator {
     this.simulatorChecker = this.check(simulator, onSimulationFinished);
   }
 
+  // Recursive timer function to keep checking if simulation is settled every 100 ms
   check = (simulator, onFinished) => {
     return setTimeout(() => {
       if (simulator.isWorldSleeping()) {

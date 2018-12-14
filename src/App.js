@@ -2,9 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import { MuiThemeProvider, createMuiTheme } from '@material-ui/core/styles';
 
-import Population from './components/Population';
 import Demo from './components/Demo';
-import DemoContainer from './components/DemoContainer';
 
 const theme = createMuiTheme();
 

@@ -1,22 +1,22 @@
 import wdt from 'weighted-delaunay';
 import * as math from 'mathjs';
-//import PlantsEnum from './PlantsEnum';
 
+// Class to handle calculating the fitness and fitnessData from a phenotype
 export default class FitnessCalculator {
   static calculateFitness = (phenotype, filter) => {
-    // get array of triangles for points
+    // Get delaunay triangles
     const delaunay = FitnessCalculator.getDelaunay(phenotype);
     if (!delaunay) {
       return 0;
     }
 
+    // Find the neighboring plants
     const neighborPairs = FitnessCalculator.getNeighborPairs(phenotype, delaunay);
 
+    // Calculate each of the fitness attributes and weight them
     const avgContrast = FitnessCalculator.calculateAverageNeighborContrast(neighborPairs) || 0;
     const crowding = -FitnessCalculator.calculateCrowding(neighborPairs)*4;
-
     const legality = -FitnessCalculator.calculateLegality(phenotype, filter)*8;
-
     const std = 1-FitnessCalculator.calculateTotalDiversity(phenotype);
 
     const fitness = avgContrast + std + crowding + legality;
@@ -25,6 +25,7 @@ export default class FitnessCalculator {
     return { fitness, delaunay, fitnessData };
   }
 
+  //
   static calculateLegality = (phenotype, filter) => {
     let totalIllegal = 0;
     phenotype.forEach(plant => {
@@ -196,10 +197,12 @@ export default class FitnessCalculator {
         weights.push(r);
       });
       const triangles = wdt(points, weights);
+      const trianglesFlat = [].concat.apply([], triangles);
+      const pointsFlat = [].concat.apply([], points);
 
       return {
-        triangles: triangles.flat(),
-        points: points.flat()
+        triangles: trianglesFlat,
+        points: pointsFlat
       }
     }
   }

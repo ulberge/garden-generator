@@ -5,8 +5,8 @@ import Button from '@material-ui/core/Button';
 
 import FinalDisplay from './FinalDisplay';
 import PlantMenu from './PlantMenu';
-import GardenDesignPopulation from '../js/GardenDesignPopulation';
 
+import GardenDesignPopulation from '../js/GardenDesignPopulation';
 import FitnessCalculator from '../js/FitnessCalculator';
 import PhenotypeGenerator from '../js/PhenotypeGenerator';
 import FitnessViewer from '../js/FitnessViewer';
@@ -14,9 +14,6 @@ import Filter from '../js/Filter';
 
 const popSize = 12;
 
-// Maintains a population of individuals
-// Each individual has a genotype and a fitness
-// When all the fitnesses are calculated, a new generation is produced
 export default class Demo extends Component {
   state = {
     individuals: [],
@@ -175,7 +172,7 @@ export default class Demo extends Component {
         <div style={{ position: 'relative', left: '-225px', top: '-150px', fontSize: '12px' }}>
           All illustrations from the King County Native Plant Guide (https://green2.kingcounty.gov/gonative/Plan.aspx?Act=view&PlanID=13)
         </div>
-        <div style={{ position: 'relative', top: '-100px', paddingBottom: '80px', margin: '0' }}>
+        <div style={{ position: 'relative', top: '-80px', paddingBottom: '80px', margin: '0' }}>
           <div>
             <Button variant="contained" style={{ margin: '20px' }} onClick={this.restart}>
               Restart
