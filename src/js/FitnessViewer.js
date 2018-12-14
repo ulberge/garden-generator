@@ -27,9 +27,9 @@ export default class FitnessViewer {
       return;
     }
 
-    this.drawNeighborContrast();
-    this.drawOverlappingPlants();
-    this.drawIllegalPlants();
+    this.drawNeighborContrast(ctx, individual);
+    this.drawOverlappingPlants(ctx, individual);
+    this.drawIllegalPlants(ctx, individual);
   }
 
   // Draw lines between neighbors as green for 3 contrast, yellow for 2 contrasts, red for 1, and pink for 0

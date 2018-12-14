@@ -1,8 +1,10 @@
 import SitePlan from './SitePlan';
 
+// Class to provide helper functions for site map based on a image representing sunlight and blocked areas
 export default class Filter {
   constructor(onLoad) {
     var img = new Image();
+    // Get the image that represents the sunlight and blocked areas
     img.src = SitePlan.filterImg;
     img.onload = () => {
       const canvas = document.createElement('canvas');
@@ -21,6 +23,7 @@ export default class Filter {
     };
   }
 
+  // Decode the filter image into [-1,3] blocked or sunlight
   getType = (pos) => {
     const filterVal = this.filter.get(pos)[0];
 
@@ -29,13 +32,13 @@ export default class Filter {
         // blocked
         return -1;
       case 50:
-        // shade 0
+        // shade
         return 0;
       case 150:
-        // part shade 1
+        // part shade
         return 1;
       case 200:
-        // part sun 2
+        // part sun
         return 2;
       case 255:
         // sun
@@ -45,6 +48,7 @@ export default class Filter {
     }
   }
 
+  // Check if the given plant type can legally be in the location
   isLegal = (plantType, pos) => {
     const type = this.getType(pos);
 

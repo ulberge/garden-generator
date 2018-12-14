@@ -25,7 +25,7 @@ export default class FitnessCalculator {
     return { fitness, delaunay, fitnessData };
   }
 
-  //
+  // Count all the plants in illegal positions and divide by the number of plants
   static calculateLegality = (phenotype, filter) => {
     let totalIllegal = 0;
     phenotype.forEach(plant => {
@@ -40,6 +40,7 @@ export default class FitnessCalculator {
     return legality;
   }
 
+  // Calculate the overlap between all the pairs
   static calculateCrowding = (neighborPairs) => {
     // for each element, check its neighbors, are they too close?
     let totalOverlap = 0;
@@ -60,6 +61,7 @@ export default class FitnessCalculator {
         overlapPercentage = overlap/(type1.r);
       }
 
+      // Only count overlap of a certain degree
       if (overlapPercentage > 0.6) {
         totalOverlap += Math.pow(overlapPercentage, 2);
         pair.overlap = overlap;
@@ -74,6 +76,7 @@ export default class FitnessCalculator {
     return totalOverlap/overlapCount;
   }
 
+  // Calculate the standard deviation among the area of the garden occupied by different plant species
   static calculateTotalDiversity = (phenotype) => {
     const areaByTypeMap = {};
     phenotype.forEach(plant => {
@@ -92,6 +95,7 @@ export default class FitnessCalculator {
     return std/mean;
   }
 
+  // Calculate the average contrast between neighboring plants
   static calculateAverageNeighborContrast = (neighborPairs) => {
     let totalContrast = 0;
     let contrastCount = 0;
@@ -104,9 +108,12 @@ export default class FitnessCalculator {
       }
     });
 
+    // Normalize
     return (totalContrast/contrastCount)/3;
   }
 
+  // Get all the neighbor pairs of plants using a delaunay triangulation
+  // Ignore pairs of the same type of plant or pairs that are too far apart
   static getNeighborPairs = (phenotype, delaunay) => {
     // Make map of points to plants
     const pointToPlant = {};
@@ -118,7 +125,7 @@ export default class FitnessCalculator {
 
     const neighborMap = {};
 
-    // for each node find its neighbors, but only add neighbors once
+    // For each node find its neighbors, but only add neighbors once
     const {points, triangles} = delaunay;
     for (let i = 0; i < triangles.length/3; i += 1) {
       // Get the nodes which will be associated to plants
@@ -157,6 +164,7 @@ export default class FitnessCalculator {
     return neighborPairs;
   }
 
+  // Check if plants are close enough to be a neighbor pair
   static isNextTo = (plant0, plant1) => {
     const dist = FitnessCalculator.getDistance(plant0.pos.x, plant0.pos.y, plant1.pos.x, plant1.pos.y);
     const maxDist = (plant0.type.r + plant1.type.r) * 1.2;
@@ -166,25 +174,27 @@ export default class FitnessCalculator {
     return false;
   }
 
+  // Get the normalized contrast between two plants
   static calculateContrast = (p0, p1) => {
-    if (p0.type.key == p1.type.key) {
+    if (p0.type.key === p1.type.key) {
       return null;
     }
 
     let contrast = 0;
-    if (p0.type.foliageColor != p1.type.foliageColor) {
+    if (p0.type.foliageColor !== p1.type.foliageColor) {
       contrast += 1;
     }
-    if (p0.type.foliageShape != p1.type.foliageShape) {
+    if (p0.type.foliageShape !== p1.type.foliageShape) {
       contrast += 1;
     }
-    if (p0.type.foliageSize != p1.type.foliageSize) {
+    if (p0.type.foliageSize !== p1.type.foliageSize) {
       contrast += 1;
     }
 
     return contrast;
   }
 
+  // Get the weighted delaunay triangulation of the plants based on their location and radius
   static getDelaunay = (phenotype) => {
     if (phenotype && phenotype.length > 1) {
       const points = [];
@@ -207,6 +217,7 @@ export default class FitnessCalculator {
     }
   }
 
+  // Get the distance between two points
   // From: https://gist.github.com/timohausmann/5003280
   static getDistance = ( x1, y1, x2, y2 ) => {
     let xs = x2 - x1;
