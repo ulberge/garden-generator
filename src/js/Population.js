@@ -1,6 +1,11 @@
-/**
+/************************************************************
+*
+* Population.js
+* By: Erik Ulberg
+*
 * Defines a class that represents a population for a genetic algorithm
-*/
+*
+*************************************************************/
 export default class Population {
     constructor(initialPopulation, options = {}) {
       this.individuals = initialPopulation;

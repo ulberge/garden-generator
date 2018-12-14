@@ -1,6 +1,13 @@
 import SitePlan from './SitePlan';
 
-// Class to provide helper functions for site map based on a image representing sunlight and blocked areas
+/************************************************************
+*
+* Filter.js
+* By: Erik Ulberg
+*
+* Class to provide helper functions for site map based on a image representing sunlight and blocked areas
+*
+*************************************************************/
 export default class Filter {
   constructor(onLoad) {
     var img = new Image();

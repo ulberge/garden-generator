@@ -5,7 +5,14 @@ import ID from './ID';
 // Universal garden id incrementor
 const GARDEN_ID = new ID();
 
-// Class to wrap around the generic Population class and make it work for garden designs
+/************************************************************
+*
+* GardenDesignPopulation.js
+* By: Erik Ulberg
+*
+* Class to wrap around the generic Population class and make it work for garden designs
+*
+*************************************************************/
 export default class GardenDesignPopulation {
   constructor(popSize, filter) {
     // x, y, w, h

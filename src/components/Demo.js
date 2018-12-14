@@ -14,10 +14,17 @@ import Filter from '../js/Filter';
 
 const popSize = 12;
 
-// Class for the Demo for Garden Generator
-// Renders the best individual, simulators for the whole population, and a plant menu
-// Runs the evolution
-// Takes user input
+/************************************************************
+*
+* Demo.js
+* By: Erik Ulberg
+*
+* Class for the Demo for Garden Generator
+* Renders the best individual, simulators for the whole population, and a plant menu
+* Runs the evolution
+* Takes user input
+*
+*************************************************************/
 export default class Demo extends Component {
   state = {
     individuals: [],

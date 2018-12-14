@@ -1,5 +1,11 @@
-
-// Class to handle rendering the fitness calculations to a canvas
+/************************************************************
+*
+* FitnessViewer.js
+* By: Erik Ulberg
+*
+* Class to handle rendering the fitness calculations to a canvas
+*
+*************************************************************/
 export default class FitnessViewer {
   constructor(displays, scale=1) {
     // List of displays to render to

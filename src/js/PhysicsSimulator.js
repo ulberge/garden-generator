@@ -7,7 +7,14 @@ const { Bodies, Render, World, Engine, Runner, Vertices, Composite } = Matter;
 
 window.decomp = decomp;
 
-// Class to handle calculating and rendering the transformation from genotype to phenotype
+/************************************************************
+*
+* PhysicsSimulator.js
+* By: Erik Ulberg
+*
+* Class to handle calculating and rendering the transformation from genotype to phenotype
+*
+*************************************************************/
 export default class PhysicsSimulator{
   constructor(el, width, height, filter) {
     this.el = el;

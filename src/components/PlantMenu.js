@@ -2,7 +2,14 @@ import React, { Component } from 'react';
 import PlantsEnum from '../js/PlantsEnum';
 import Checkbox from '@material-ui/core/Checkbox';
 
-// Class for the right hand plant menu with a plant list and checkboxes
+/************************************************************
+*
+* PlantMenu.js
+* By: Erik Ulberg
+*
+* Class for the right hand plant menu with a plant list and checkboxes
+*
+*************************************************************/
 class PlantMenu extends Component {
   state = {
     unchecked: {}

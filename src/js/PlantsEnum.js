@@ -1,4 +1,11 @@
-// File for encoding the plant information
+/************************************************************
+*
+* PlantsEnum.js
+* By: Erik Ulberg
+*
+* File for encoding the plant information
+*
+*************************************************************/
 const PlantsEnum = {
   VINE_MAPLE: {
     label: 'vine maple',

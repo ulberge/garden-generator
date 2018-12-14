@@ -1,4 +1,11 @@
-// Class to handle getting a universal ID
+/************************************************************
+*
+* ID.js
+* By: Erik Ulberg
+*
+* Class to handle getting a universal ID
+*
+*************************************************************/
 export default class ID {
     constructor() {
       this.nextId = -1;

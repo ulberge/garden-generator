@@ -1,7 +1,14 @@
 import PhysicsSimulator from './PhysicsSimulator';
 
-// Class to handle generating a phenotype from the genotype
-// It recycles the PhysicsSimulators and takes care of waiting for them to finish
+/************************************************************
+*
+* PhenotypeGenerator.js
+* By: Erik Ulberg
+*
+* Class to handle generating a phenotype from the genotype
+* It recycles the PhysicsSimulators and takes care of waiting for them to finish
+*
+*************************************************************/
 export default class PhenotypeGenerator {
   constructor(displays, filter) {
     this.simulators = [];

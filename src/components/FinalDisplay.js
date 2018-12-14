@@ -6,7 +6,14 @@ import SitePlan from '../js/SitePlan';
 // Scale up for larger version
 const scale = 4;
 
-// Class for final rendering of the best individual
+/************************************************************
+*
+* FinalDisplay.js
+* By: Erik Ulberg
+*
+* Class for final rendering of the best individual
+*
+*************************************************************/
 export default class FinalDisplay extends Component {
 
   componentDidMount() {

@@ -1,7 +1,14 @@
 import wdt from 'weighted-delaunay';
 import * as math from 'mathjs';
 
-// Class to handle calculating the fitness and fitnessData from a phenotype
+/************************************************************
+*
+* FitnessCalculator.js
+* By: Erik Ulberg
+*
+* Class to handle calculating the fitness and fitnessData from a phenotype
+*
+*************************************************************/
 export default class FitnessCalculator {
   static calculateFitness = (phenotype, filter) => {
     // Get delaunay triangles
